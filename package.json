@@ -1,0 +1,15 @@
+{
+  "name": "rahama-essentials",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "dev": "concurrently -k -n API,WEB -c blue,magenta \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "start:api": "npm --prefix backend run dev",
+    "start:web": "npm --prefix frontend run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -1,0 +1,53 @@
+[
+  {
+    "name": "whatch",
+    "category": "Other Accessories",
+    "description": "w is part of the Rahama Essentials other accessories collection. A versatile accessory selected to bring a considered finishing touch to your look. Contact us on WhatsApp for current price, availability and more details.",
+    "image": "/uploads/b3dc2e5e-8b68-42dd-9e6f-6214b4c37ff7.jpeg",
+    "price": "",
+    "salePrice": "",
+    "stock": null,
+    "lowStockAt": 3,
+    "draft": false,
+    "tags": [],
+    "featured": false,
+    "available": true,
+    "imageHash": "8f14ea3763c03615a51f7dbad4c074081a7fce7e8c3178493274975d0215b358",
+    "id": "rahama-1f3e2709-4ed9-40cf-8c5d-7a569530ce64",
+    "deletedAt": "2026-11-09T13:55:50.764Z"
+  },
+  {
+    "name": "158",
+    "category": "Other Accessories",
+    "description": "158 is part of the Rahama Essentials other accessories collection. A versatile accessory selected to bring a considered finishing touch to your look. Contact us on WhatsApp for current price, availability and more details.",
+    "image": "/uploads/d91fcaab-ea0c-4cc5-b7b8-c8613b38bf31.jpeg",
+    "price": "",
+    "salePrice": "",
+    "stock": null,
+    "lowStockAt": 3,
+    "draft": true,
+    "tags": [],
+    "featured": false,
+    "available": true,
+    "imageHash": "19a478d26e0b248c9c30a20d0c6c5b2d135cbedf42205491d9ef9274c0b40533",
+    "id": "rahama-6e235837-6841-44ef-8bb7-50a6541bc682",
+    "deletedAt": "2026-11-09T13:42:49.712Z"
+  },
+  {
+    "name": "158",
+    "category": "Other Accessories",
+    "description": "158 is part of the Rahama Essentials other accessories collection. A versatile accessory selected to bring a considered finishing touch to your look. Contact us on WhatsApp for current price, availability and more details.",
+    "image": "/uploads/7dcc0141-ad72-4f29-a674-0e01cae99b89.jpeg",
+    "price": "",
+    "salePrice": "",
+    "stock": null,
+    "lowStockAt": 3,
+    "draft": true,
+    "tags": [],
+    "featured": false,
+    "available": true,
+    "imageHash": "19a478d26e0b248c9c30a20d0c6c5b2d135cbedf42205491d9ef9274c0b40533",
+    "id": "rahama-019f04d0-3199-45cc-bf00-e8ce33525bfd",
+    "deletedAt": "2026-11-09T13:31:34.628Z"
+  }
+]
