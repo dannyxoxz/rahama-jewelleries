@@ -10,24 +10,57 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
+<<<<<<< HEAD
+import { MongoClient } from 'mongodb';
+import { v2 as cloudinary } from 'cloudinary';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DATA_FILE = path.join(__dirname, 'data', 'products.json');
+=======
 import multer from 'multer';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = path.join(__dirname, 'data', 'products.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
+>>>>>>> origin/main
 const SETTINGS_FILE = path.join(__dirname, 'data', 'settings.json');
 const ENQUIRIES_FILE = path.join(__dirname, 'data', 'enquiries.json');
 const TRASH_FILE = path.join(__dirname, 'data', 'trash.json');
 const ORDERS_FILE = path.join(__dirname, 'data', 'orders.json');
+<<<<<<< HEAD
+=======
 await fs.mkdir(UPLOAD_DIR, { recursive: true });
 const storage = multer.diskStorage({ destination: (_req, _file, cb) => cb(null, UPLOAD_DIR), filename: (_req, file, cb) => cb(null, `${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`) });
 const upload = multer({ storage, limits: { fileSize: 12 * 1024 * 1024, files: 30 }, fileFilter: (_req, file, cb) => { const ok = /^image\/(jpeg|png|webp|gif)$/.test(file.mimetype); cb(ok ? null : new Error('Please upload JPG, PNG, WEBP or GIF images only.'), ok); } });
+>>>>>>> origin/main
 const app = express();
 const PORT = Number(process.env.PORT || 5000);
 const JWT_SECRET = process.env.JWT_SECRET || '';
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+<<<<<<< HEAD
+const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'rahama_essentials';
+const cloudinaryConfigured = Boolean(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+if (cloudinaryConfigured) cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET, secure: true });
+
+let mongoClient;
+let mongoCollection;
+if (MONGODB_URI) {
+  mongoClient = new MongoClient(MONGODB_URI, { serverSelectionTimeoutMS: 10000 });
+  await mongoClient.connect();
+  mongoCollection = mongoClient.db(MONGODB_DB_NAME).collection('app_data');
+  console.log('Connected to MongoDB.');
+} else if (process.env.VERCEL) {
+  throw new Error('MONGODB_URI is required in Vercel production environment variables.');
+}
+if (process.env.VERCEL && !cloudinaryConfigured) {
+  throw new Error('Cloudinary is required in Vercel. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET.');
+}
+
+=======
+>>>>>>> origin/main
 
 if (JWT_SECRET.length < 32 || ADMIN_EMAIL.length < 5 || ADMIN_PASSWORD.length < 12 || ADMIN_PASSWORD.includes('CHANGE_THIS')) {
   console.error('\nConfiguration incomplete. Copy .env.example to .env and set JWT_SECRET, ADMIN_EMAIL and a unique ADMIN_PASSWORD (at least 12 characters).\n');
@@ -40,6 +73,39 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({ origin: CLIENT_URL.split(',').map((s) => s.trim()), methods: ['GET', 'POST', 'PUT', 'DELETE'], allowedHeaders: ['Content-Type', 'Authorization'] }));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+<<<<<<< HEAD
+app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, limit: 12, standardHeaders: 'draft-7', legacyHeaders: false, message: { success: false, message: 'Too many login attempts. Please wait and try again.' } }));
+
+function dataKey(file) { return path.basename(file, '.json'); }
+async function readJson(file, fallback) {
+  const key = dataKey(file);
+  if (mongoCollection) {
+    const stored = await mongoCollection.findOne({ _id: key });
+    if (stored) return stored.value;
+    let initial = fallback;
+    try { initial = JSON.parse(await fs.readFile(file, 'utf8')); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    await mongoCollection.updateOne({ _id: key }, { $setOnInsert: { value: initial, updatedAt: new Date() } }, { upsert: true });
+    return initial;
+  }
+  try { return JSON.parse(await fs.readFile(file, 'utf8')); }
+  catch (error) {
+    if (error.code === 'ENOENT') { await fs.mkdir(path.dirname(file), { recursive: true }); await fs.writeFile(file, JSON.stringify(fallback, null, 2)); return fallback; }
+    throw error;
+  }
+}
+async function writeJson(file, value) {
+  if (mongoCollection) {
+    await mongoCollection.updateOne({ _id: dataKey(file) }, { $set: { value, updatedAt: new Date() } }, { upsert: true });
+    return;
+  }
+  const temp = `${file}.${crypto.randomUUID()}.tmp`;
+  await fs.writeFile(temp, JSON.stringify(value, null, 2), 'utf8');
+  await fs.rename(temp, file);
+}
+async function readProducts() { return readJson(DATA_FILE, []); }
+async function writeProducts(products) { return writeJson(DATA_FILE, products); }
+=======
 app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '7d', immutable: true }));
 app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, limit: 12, standardHeaders: 'draft-7', legacyHeaders: false, message: { success: false, message: 'Too many login attempts. Please wait and try again.' } }));
 
@@ -57,6 +123,7 @@ async function writeProducts(products) {
 }
 async function readJson(file, fallback) { try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch (e) { if (e.code === 'ENOENT') { await fs.mkdir(path.dirname(file), { recursive: true }); await fs.writeFile(file, JSON.stringify(fallback, null, 2)); return fallback; } throw e; } }
 async function writeJson(file, value) { const temp = `${file}.${crypto.randomUUID()}.tmp`; await fs.writeFile(temp, JSON.stringify(value, null, 2)); await fs.rename(temp, file); }
+>>>>>>> origin/main
 const defaultSettings = { storeName: 'Rahama Essentials', tagline: 'Style in every detail', whatsapp: process.env.WHATSAPP_NUMBER || '2347054301807', announcement: 'A little detail makes a lasting impression', contactEmail: '', instagram: '', heroTitle: 'Details that define you.', heroText: 'Thoughtful finishing touches, statement pieces and everyday favourites.', slideshowIds: [] };
 function cleanProduct(input, existing = {}) {
   const name = String(input.name ?? existing.name ?? '').trim().slice(0, 100);
@@ -122,6 +189,20 @@ app.post('/api/admin/enquiries', requireAdmin, async (req, res, next) => { try {
 app.put('/api/admin/enquiries/:id', requireAdmin, async (req, res, next) => { try { const list = await readJson(ENQUIRIES_FILE, []); const i = list.findIndex(x => x.id === req.params.id); if(i < 0) return res.status(404).json({success:false,message:'Enquiry not found.'}); list[i] = {...list[i], status: ['New','Contacted','Resolved'].includes(req.body.status) ? req.body.status : list[i].status, notes: req.body.notes === undefined ? list[i].notes : String(req.body.notes).slice(0,1000)}; await writeJson(ENQUIRIES_FILE,list); res.json({success:true,data:list[i]}); } catch(e) { next(e); } });
 app.delete('/api/admin/enquiries/:id', requireAdmin, async (req,res,next) => { try { const list=await readJson(ENQUIRIES_FILE,[]); const nextList=list.filter(x=>x.id!==req.params.id); if(nextList.length===list.length)return res.status(404).json({success:false,message:'Enquiry not found.'}); await writeJson(ENQUIRIES_FILE,nextList); res.json({success:true,message:'Enquiry removed.'}); } catch(e){next(e);} });
 app.get('/api/admin/backup', requireAdmin, async (_req,res,next) => { try { const payload = { exportedAt:new Date().toISOString(), products:await readProducts(), settings:{...defaultSettings,...await readJson(SETTINGS_FILE,defaultSettings)}, enquiries:await readJson(ENQUIRIES_FILE,[]), trash:await readJson(TRASH_FILE,[]), orders:await readJson(ORDERS_FILE,[]) }; res.setHeader('Content-Disposition', `attachment; filename=rahama-backup-${new Date().toISOString().slice(0,10)}.json`); res.json(payload); } catch(e){next(e);} });
+<<<<<<< HEAD
+app.post('/api/admin/images/signature', requireAdmin, async (req, res, next) => {
+  try {
+    if (!cloudinaryConfigured) return res.status(503).json({ success: false, message: 'Cloudinary is not configured. Add the three Cloudinary environment variables to the backend service.' });
+    const imageHash = String(req.body?.imageHash || '').trim().toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(imageHash)) return res.status(400).json({ success: false, message: 'The image could not be verified. Please select it again.' });
+    const products = await readProducts();
+    const duplicate = products.find((product) => product.imageHash === imageHash);
+    if (duplicate) return res.json({ success: true, duplicate: true, data: { existingName: duplicate.name, image: duplicate.image } });
+    const timestamp = Math.round(Date.now() / 1000);
+    const folder = 'rahama-essentials/products';
+    const signature = cloudinary.utils.api_sign_request({ folder, timestamp }, process.env.CLOUDINARY_API_SECRET);
+    res.json({ success: true, cloudName: process.env.CLOUDINARY_CLOUD_NAME, apiKey: process.env.CLOUDINARY_API_KEY, timestamp, folder, signature });
+=======
 app.post('/api/admin/images', requireAdmin, upload.array('images', 30), async (req, res, next) => {
   try {
     const products = await readProducts();
@@ -140,6 +221,7 @@ app.post('/api/admin/images', requireAdmin, upload.array('images', 30), async (r
       }
     }
     res.json({ success: true, data: results, message: `${results.filter(x => !x.duplicate).length} new image(s) uploaded; ${results.filter(x => x.duplicate).length} duplicate(s) skipped.` });
+>>>>>>> origin/main
   } catch (error) { next(error); }
 });
 app.get('/api/admin/products', requireAdmin, async (_req, res, next) => {
@@ -181,7 +263,12 @@ app.delete('/api/admin/products/:id', requireAdmin, async (req, res, next) => {
 app.use((req, res) => res.status(404).json({ success: false, message: `Route not found: ${req.method} ${req.path}` }));
 app.use((error, _req, res, _next) => {
   console.error(error);
+<<<<<<< HEAD
+  const message = error?.message?.includes('cloudinary') || error?.message?.includes('Cloudinary') ? `Image upload failed: ${error.message}` : 'Something went wrong on the server.';
+  res.status(500).json({ success: false, message });
+=======
   res.status(500).json({ success: false, message: 'Something went wrong on the server.' });
+>>>>>>> origin/main
 });
 
 await readProducts();
@@ -191,8 +278,12 @@ await readJson(TRASH_FILE, []);
 await readJson(ORDERS_FILE, []);
 const BACKUP_DIR = path.join(__dirname, 'backups');
 async function createDailyBackup() { try { await fs.mkdir(BACKUP_DIR, {recursive:true}); const day = new Date().toISOString().slice(0,10); const target = path.join(BACKUP_DIR, `rahama-${day}.json`); try { await fs.access(target); return; } catch {} const snapshot = {createdAt:new Date().toISOString(),products:await readProducts(),settings:await readJson(SETTINGS_FILE,defaultSettings),enquiries:await readJson(ENQUIRIES_FILE,[]),trash:await readJson(TRASH_FILE,[]),orders:await readJson(ORDERS_FILE,[])}; await fs.writeFile(target,JSON.stringify(snapshot,null,2)); const files=(await fs.readdir(BACKUP_DIR)).filter(x=>x.endsWith('.json')).sort(); for(const old of files.slice(0,Math.max(0,files.length-14))) await fs.unlink(path.join(BACKUP_DIR,old)).catch(()=>{}); } catch(e) { console.error('Automatic backup warning:',e.message); } }
+<<<<<<< HEAD
+if (!process.env.VERCEL) { await createDailyBackup(); const backupTimer=setInterval(createDailyBackup, 60*60*1000); backupTimer.unref(); }
+=======
 await createDailyBackup();
 const backupTimer=setInterval(createDailyBackup, 60*60*1000); backupTimer.unref();
+>>>>>>> origin/main
 if (!process.env.VERCEL) app.listen(PORT, () => console.log(`Rahama Essentials API running at http://localhost:${PORT}`));
 
 export default app;

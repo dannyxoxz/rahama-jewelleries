@@ -3,6 +3,10 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, BadgeCheck, Gem, Menu, Search, ShieldCheck, Sparkles, X, Heart, Eye, Clock3, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 import initialProducts from './data/products.json';
 import AdminPage from './pages/AdminPage.jsx';
+<<<<<<< HEAD
+import Hero3D from './Hero3D.jsx';
+=======
+>>>>>>> origin/main
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const WA = import.meta.env.VITE_WHATSAPP_NUMBER || '2347054301807';
@@ -22,7 +26,10 @@ function Storefront() {
   const [activeCategory, setActiveCategory] = useState('All pieces');
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+<<<<<<< HEAD
+=======
   const [slideIndex, setSlideIndex] = useState(0);
+>>>>>>> origin/main
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState({});
   const [favourites, setFavourites] = useState(() => JSON.parse(localStorage.getItem('rahama_favourites') || '[]'));
@@ -34,6 +41,25 @@ function Storefront() {
 
   useEffect(() => {
     let alive = true;
+<<<<<<< HEAD
+    const loadStore = (firstLoad = false) => {
+      Promise.all([
+        fetch(`${API}/products`).then((r) => r.ok ? r.json() : Promise.reject()),
+        firstLoad ? fetch(`${API}/settings`).then(r => r.ok ? r.json() : Promise.reject()).catch(() => ({ data: {} })) : Promise.resolve(null)
+      ]).then(([payload, store]) => {
+        if (!alive) return;
+        if (store) setSettings(store.data || {});
+        if (!payload.success) return;
+        setProducts(payload.data || []);
+        setCategories(payload.categories || []);
+      }).catch(() => {
+        if (alive && firstLoad) setCategories([...new Set(initialProducts.map((p) => p.category))].sort());
+      }).finally(() => alive && firstLoad && setLoading(false));
+    };
+    loadStore(true);
+    const refresh = window.setInterval(() => loadStore(false), 30000);
+    return () => { alive = false; window.clearInterval(refresh); };
+=======
     Promise.all([fetch(`${API}/products`).then((r) => r.ok ? r.json() : Promise.reject()), fetch(`${API}/settings`).then(r=>r.ok?r.json():Promise.reject()).catch(()=>({data:{}}))]).then(([payload, store]) => {
       if (alive) setSettings(store.data || {});
       if (!alive || !payload.success) return;
@@ -43,6 +69,7 @@ function Storefront() {
       if (alive) setCategories([...new Set(initialProducts.map((p) => p.category))].sort());
     }).finally(() => alive && setLoading(false));
     return () => { alive = false; };
+>>>>>>> origin/main
   }, [location.key]);
 
   const allCategories = useMemo(() => ['All pieces', ...new Set([...categories, ...products.map((p) => p.category)])], [categories, products]);
@@ -52,6 +79,10 @@ function Storefront() {
     const matchesSearch = !term || `${p.name} ${p.category} ${p.description}`.toLowerCase().includes(term);
     return matchesCategory && matchesSearch && p.available !== false;
   }), [products, activeCategory, query]);
+<<<<<<< HEAD
+  const featured = products.filter((p) => p.featured).slice(0, 4);
+
+=======
   const slides = ([...products.filter((p) => p.featured), ...products.filter((p) => !p.featured)].filter((p) => p.available !== false && p.draft !== true && p.image).slice(0, 6));
   const featured = products.filter((p) => p.featured).slice(0, 4);
 
@@ -61,6 +92,7 @@ function Storefront() {
     return () => window.clearInterval(timer);
   }, [slides.length]);
   const activeSlide = slides[slideIndex] || products[0] || initialProducts[0];
+>>>>>>> origin/main
   const whatsapp = settings.whatsapp || WA;
   function toggleFavourite(id){const next=favourites.includes(id)?favourites.filter(x=>x!==id):[...favourites,id];setFavourites(next);localStorage.setItem('rahama_favourites',JSON.stringify(next));}
   function openQuickView(product){setQuickView(product);const next=[product.id,...recent.filter(x=>x!==product.id)].slice(0,8);setRecent(next);localStorage.setItem('rahama_recent',JSON.stringify(next));}
@@ -79,17 +111,25 @@ function Storefront() {
     <header className="site-header">
       <Link to="/" className="brand" aria-label="Rahama Essentials home"><span className="brand-mark"><Gem size={21}/></span><span>{settings.storeName || 'RAHAMA'} <b>ESSENTIALS</b><small>{settings.tagline || 'STYLE IN EVERY DETAIL'}</small></span></Link>
       <nav className={menuOpen ? 'nav-links open' : 'nav-links'}>
+<<<<<<< HEAD
+        <a href="#collection" onClick={() => setMenuOpen(false)}>Collection</a><a href="#story" onClick={() => setMenuOpen(false)}>Our story</a><a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a><a className="mobile-admin-link" href="/admin" onClick={() => setMenuOpen(false)}>Admin dashboard</a><a className="mobile-talk-link" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Chat on WhatsApp</a>
+=======
         <a href="#collection" onClick={() => setMenuOpen(false)}>Collection</a><a href="#story" onClick={() => setMenuOpen(false)}>Our story</a><a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+>>>>>>> origin/main
       </nav>
       <div className="header-actions"><button className="cart-trigger" onClick={()=>setCartOpen(true)} aria-label={`Open cart, ${cartCount} items`}><ShoppingBag size={16}/> Cart <span>{cartCount}</span></button><a className="admin-link" href="/admin">Admin <ShieldCheck size={15}/></a><a className="header-cta" href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('Hello Rahama Essentials, I would like to make an enquiry.')}`} target="_blank" rel="noreferrer">Let's talk <ArrowUpRight size={16}/></a><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">{menuOpen ? <X/> : <Menu/>}</button></div>
     </header>
 
     <main>
+<<<<<<< HEAD
+      <Hero3D products={products} settings={settings} whatsapp={whatsapp} imageSrc={imageSrc} waLink={waLink} />
+=======
       <section className="hero">
         <div className="hero-glow glow-one"/><div className="hero-glow glow-two"/>
         <div className="hero-copy"><div className="eyebrow"><span/> THE RAHAMA EDIT</div><h1>{settings.heroTitle || <>Details that<br/><em>define you.</em></>}</h1><p>{settings.heroText || "Thoughtful finishing touches, statement pieces and everyday favourites — selected to make your style feel unmistakably yours."}</p><div className="hero-buttons"><a className="button-primary" href="#collection">Explore the collection <ArrowRight size={17}/></a><a className="button-quiet" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer">Chat with us <ArrowUpRight size={16}/></a></div><div className="hero-note"><span className="note-line"/> Curated with care. Chosen by you.</div></div>
         <div className="hero-art"><a className="hero-frame hero-slideshow" href={waLink(activeSlide, whatsapp)} target="_blank" rel="noreferrer" aria-label={`Enquire on WhatsApp about ${activeSlide.name}`}><img key={activeSlide.id} src={imageSrc(activeSlide.image)} alt={activeSlide.name}/><div className="image-label"><span>FEATURED PIECE · {activeSlide.category}</span><b>{activeSlide.name}</b><small>Tap the image to enquire on WhatsApp</small></div></a><div className="slide-controls" aria-label="Slideshow controls">{slides.slice(0,6).map((slide,i)=><button key={slide.id} className={slideIndex===i?'active':''} onClick={()=>setSlideIndex(i)} aria-label={`Show slide ${i+1}`}/>)}</div><div className="floating-stamp"><Gem size={18}/><span>THE ART OF<br/>ACCESSORISING</span></div><div className="hero-index">{String(slideIndex+1).padStart(2,'0')} <span>/</span> {String(slides.length).padStart(2,'0')}</div></div>
       </section>
+>>>>>>> origin/main
 
       <section className="trust-row"><div><Gem/><span>Curated accessories</span></div><div><BadgeCheck/><span>Personal service</span></div><div><Sparkles/><span>Everyday to occasion</span></div></section>
       {products.some(p=>p.salePrice)&&<section className="offer-section"><div className="eyebrow"><span/> LIMITED-TIME PICKS</div><h2>Special offers<span>.</span></h2><p>Selected pieces with current special prices.</p><div className="offer-row">{products.filter(p=>p.salePrice&&p.available!==false).slice(0,4).map(p=><button key={p.id} onClick={()=>openQuickView(p)}><img src={imageSrc(p.image)} alt={p.name}/><span>{p.name}</span><b>{money(p.salePrice)}</b><del>{money(p.price)}</del></button>)}</div></section>}

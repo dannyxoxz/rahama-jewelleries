@@ -16,13 +16,21 @@ If you already have `backend/.env`, setup keeps it unchanged. Preserve your exis
 
 # Rahama Essentials — Owner-friendly shop system
 
+<<<<<<< HEAD
+A responsive jewellery and accessories catalogue with a midnight-blue and purple luxury storefront, champagne-gold details, high-contrast product text and buttons, a Three.js / GSAP-inspired 3D hero showcase, WhatsApp product enquiries, and a protected, mobile-friendly admin dashboard. The owner can manage the store without editing source code.
+=======
 A responsive jewellery and accessories catalogue with a dark navy / glowing purple-blue storefront, WhatsApp product enquiries, and a protected, mobile-friendly admin dashboard. The owner can manage the store without editing source code.
+>>>>>>> origin/main
 
 ## Main features
 
 ### Customer storefront
 - Product catalogue with search and luminous category filters.
+<<<<<<< HEAD
+- A fixed multi-product 3D hero showcase with animated purple silk, moving gold ribbons, floating gemstone accents and pointer-responsive depth. The jewellery products remain individually visible rather than rotating as a slideshow.
+=======
 - Hero slideshow that rotates automatically.
+>>>>>>> origin/main
 - Product photo click opens WhatsApp with the product name, description and direct image URL in the message.
 - Quick-view product panel, favourites saved in the visitor's browser, and recently viewed products.
 - Special-offer section appears when the owner adds an offer price.
@@ -148,3 +156,34 @@ The root `vercel.json` and `api/[...path].js` route the Vite storefront and Expr
 **This package is a deployment scaffold, not a production-ready persistent store yet.** The current backend still stores catalogue, orders, settings, enquiries and uploaded files in local JSON/filesystem paths. Vercel function filesystems are ephemeral and must not be used as the permanent database or image store. Before accepting real customer data or relying on admin changes, migrate these records to MongoDB Atlas and product uploads to Cloudinary (or another durable object store). The current backend code does not yet read `MONGODB_URI` or upload to Cloudinary. Do not assume the environment variables alone enable those integrations.
 
 Set `VITE_API_URL=/api` in the Vercel project if required by the build. Set backend secrets only in Vercel Environment Variables; never commit `.env` files. Redeploy after changing variables.
+<<<<<<< HEAD
+
+
+## Production storage (required on Vercel)
+
+The production API stores catalogue, settings, enquiries, orders and deleted-product records in MongoDB, and product images in Cloudinary. Admin uploads use short-lived signed upload instructions so image files travel directly from the browser to Cloudinary rather than through the Vercel function. Vercel's local filesystem is temporary and must not be used for permanent shop data.
+
+Set these variables in the **Vercel backend service**:
+
+- `MONGODB_URI` — MongoDB Atlas connection string
+- `MONGODB_DB_NAME` — `rahama_essentials`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `JWT_SECRET` — a unique random value of at least 32 characters
+- `JWT_EXPIRES_IN` — for example `8h`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD` — unique, at least 12 characters
+- `WHATSAPP_NUMBER` — digits only, including country code
+
+The app migrates the existing JSON data files into MongoDB the first time each data collection is read. Keep a backup of your existing catalogue before deploying the upgraded API.
+
+For local backend development, run `npm install` inside `backend` after pulling these changes. If using MongoDB and Cloudinary locally, copy `.env.example` to `.env` and enter your own values. Do not commit `.env`.
+
+## Adding product photos from WhatsApp
+
+On your phone, open WhatsApp, save the product photos to your device, then open Admin → Overview → Choose product photos. Select one or several photos from your Gallery/Downloads. The uploaded photos are stored in Cloudinary and published products are created so they appear in the public collection after the API refreshes. Edit the generated product names, descriptions, prices and categories from the Products tab.
+
+A website cannot read private WhatsApp chats or download chat attachments directly. Photos must first be saved to the phone or computer and then selected in the admin upload control.
+=======
+>>>>>>> origin/main
